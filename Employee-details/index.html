@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Employee Application</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+    <script data-require="ui-bootstrap@*" data-semver="0.12.1" src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.12.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+	<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+	<link href="style.css" rel="stylesheet">
+</head>
+
+<body ng-app="myApp" ng-controller="employeesCtrl">
+    <div class="container">
+        <div class="navbar">
+            <div class="navbar-inner">
+                <a class="brand" href="#">Employee Details</a>
+            </div>
+        </div>
+        <div>
+
+            <table id="employee" class="table table-striped table-responsive" style="width:100%">
+                <thead>
+                    <tr class="form-heading">
+                        <th>Id</th>
+                        <th ng-click="orderByMe('firstName')">First Name</th>
+                        <th ng-click="orderByMe('lastName')">Last Name</th>
+                        <th ng-click="orderByMe('age')">Age</th>
+                        <th ng-click="orderByMe('employer')">Employer</th>
+                        <th ng-click="orderByMe('joiningDate')">joiningDate</th>
+                        <th ng-click="orderByMe('location')">location</th>
+                        <th>Modify</th>
+
+                    </tr>
+                </thead>
+                <div class="control-group">
+                    <label class="control-label" for="inputDescription">Search</label>
+                    <div class="controls">
+                        <input type="text" ng-model="employeeFilter" placeholder="Search for Employee" style="width: 300px;" required />
+                    </div>
+
+                </div>
+
+                <tbody>
+
+                    <tr ng-repeat="employee in filteredemployees | filter : employeeFilter | orderBy:myOrderBy">
+                        <td>{{employee.id}}</td>
+                        <td>{{employee.firstName}}</td>
+                        <td>{{employee.lastName}}</td>
+                        <td>{{employee.age}}</td>
+                        <td>{{employee.employer}}</td>
+                        <td>{{employee.joiningDate}}</td>
+                        <td>{{employee.location}}</td>
+                        <td> <a class="btn btn-success" data-toggle="modal" data-target="#modal" ng-click="editemployee(employee)">Edit</a>
+                            <a class="btn btn-info" data-toggle="modal" ng-click="removeemployee(employee)">Delete</a></td>
+
+
+                    </tr>
+                </tbody>
+            </table>
+            <pagination ng-model="currentPage" total-items="employees.length" max-size="maxSize" boundary-links="true">
+            </pagination>
+
+            <a class="btn btn-primary add-employee" data-toggle="modal" data-target="#add" ng-click="editemployee(employee)">Add Task</a>
+        </div>
+        <div id="modal" role="dialog" class="modal hide fade">
+            <div>
+                <div class="modal-header">
+                    Task Dialog
+                </div>
+                <div class="modal-body">
+				<form name="editForm">
+                    <label for="txtName"></label>
+                    <input type="text" ng-model="selectedemployee.firstName" placeholder="FirstName" required />
+                    <input type="text" ng-model="selectedemployee.lastName" placeholder="LastName" required />
+                    <input type="text" ng-model="selectedemployee.age" placeholder="Age" required />
+                    <input type="text" ng-model="selectedemployee.employer" placeholder="age" required />
+                    <input type="text" ng-model="selectedemployee.joiningDate" placeholder="joiningDate" required />
+                    <input type="text" ng-model="selectedemployee.location" placeholder="location" required />
+                    <input type="text" ng-model="selectedemployee.id" placeholder="id" required />
+                </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" ng-disabled="editForm.$invalid"  data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="add" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+		
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="addDialogLabel">Add Task</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" name="employeeForm">
+                        <ng-form name="innerForm">
+                    <div class="control-group">
+                        <label class="control-label" for="inputTask">Id</label>
+                        <div class="controls">
+
+                            <input type="number" id="inputDescription" name="id" ng-model="id" placeholder="Id" ng-minlength="2" style="width: 300px;" required
+                            />
+                            <span class="error" ng-show="employeeForm.id.$error.required && innerForm.id.$touched">Firstname is required.</span>                        <br />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="inputDescription">First Name</label>
+                        <div class="controls">
+                            <input type="text" id="inputDescription" name="firstName" ng-model="firstName" placeholder="firstName" ng-minlength="4" style="width: 300px;"
+                                required />
+                                <span class="error" ng-show="innerForm.firstName.$invalid && innerForm.firstName.$touched">Firstname is required.</span>
+                        </div>
+
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="inputDescription">Last Name</label>
+                        <div class="controls">
+                            <input type="text" id="inputDescription" name="lastName" ng-model="lastName" placeholder="LastName" ng-minlength="4" style="width: 300px;"
+                                required />
+                                <span class="error" ng-show="innerForm.lastName.$error.required && innerForm.lastName.$touched">Firstname is required.</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="inputDescription">Age</label>
+                        <div class="controls">
+                            <input type="number" id="inputDescription" name="age" ng-model="age" placeholder="Age" ng-maxlength="2" style="width: 300px;" required
+                            />
+                            <span class="error" ng-show="innerForm.age.$error.required && innerForm.age.$touched">Age is required.</span>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="inputDescription">Employer</label>
+                        <div class="controls">
+                            <input type="text" id="inputDescription" name="employer" ng-model="employer" placeholder="Employer" ng-minlength="4" style="width: 300px;"
+                                required />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="inputDescription">Joining Date</label>
+                        <div class="controls">
+                            <input type="text" id="inputDescription" name="joiningDate" ng-model="joiningDate" placeholder="Joining Date" style="width: 300px;" required
+                            />
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" for="inputDescription">Location</label>
+                        <div class="controls">
+                            <input type="text" id="inputDescription" name="location" ng-model="location" placeholder="Location" style="width: 300px;" required />
+                        </div>
+                    </div>
+                </ng-form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a id="btn_AddNew" ng-disabled="employeeForm.$invalid" ng-class="{'btn btn-primary disabled':employeeForm.$invalid,'btn btn-primary enabled':employeeForm.$valid}" ng-click="addNewemployee()">Add Task</a>
+                <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('myApp', ['ui.bootstrap']);
+        app.controller('employeesCtrl', function ($scope, $http) {
+            $scope.filteredemployees = [],
+               $scope.currentPage = 1,
+                 $scope.numPerPage = 10,
+                $scope.maxSize = 5;
+
+            $http.get("https://api.myjson.com/bins/1edijl")
+                .then(function (response) {
+          
+                        $scope.employees = response.data;
+
+
+                    $scope.$watch('currentPage + numPerPage', function () {
+                        var begin = (($scope.currentPage - 1) * $scope.numPerPage)
+                            , end = begin + $scope.numPerPage;
+
+                        $scope.filteredemployees = $scope.employees.slice(begin, end);
+                    });
+                });
+            $scope.editemployee = function (employee) {
+                $scope.selectedemployee = employee;
+            };
+            $scope.removeemployee = function (employee) {
+                if(confirmDel(employee))
+{
+                var index = $scope.employees.indexOf(employee);
+                $scope.employees.splice(index, 1);
+                var indexForFiltered=index-$scope.numPerPage*($scope.currentPage-1);
+                $scope.filteredemployees.splice(indexForFiltered, 1);
+}
+            };
+            $scope.addNewemployee = function () {
+                if($("#btn_AddNew").attr('class')=="btn btn-primary enabled")
+                {                
+                    var totalpage = Math.ceil($scope.employees.length / $scope.numPerPage);
+                    $scope.employees.push({ firstName: $scope.firstName, lastName: $scope.lastName, age: $scope.age, employer: $scope.employer, joiningDate: $scope.joiningDate, location: $scope.location, id: $scope.id });
+
+                    if (totalpage == $scope.currentPage) {
+                        $scope.filteredemployees.push({ firstName: $scope.firstName, lastName: $scope.lastName, age: $scope.age, employer: $scope.employer, joiningDate: $scope.joiningDate, location: $scope.location, id: $scope.id });
+                    }
+
+                    clearControls();
+                }
+            }
+            function bindemployees() {
+                $("#employee").DataTable(
+                    {
+                        "lengthMenu": [[5, 10, 15, -1], [5, 10, 15, "All"]]
+                    });
+
+            }
+            function clearControls() {
+                $scope.firstName = "";
+                $scope.lastName = "";
+                $scope.age = "";
+                $scope.joiningDate = "";
+                $scope.employer = "";
+                $scope.location = "";
+                $scope.id = "";
+                $("#add").modal('hide');
+                
+            }
+            function confirmDel(employee)
+            {
+                var index = $scope.employees.indexOf(employee);
+                var result=false;
+                if(confirm("Are you sure you want to delete "+employee.firstName+"?"))
+                {
+                        result=true;
+                }
+                else{result=false;}
+                return result;
+            }
+            $scope.orderByMe = function (employee) {
+                $scope.myOrderBy = employee;
+            }
+        });
+    </script>
+</body>
+
+</html>
